@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Total Bills</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='glow-effects.css') }}">
+
+
+<script> localStorage.getItem("bills")</script>
+
+
+<style>
+body{
+    margin:0;
+    font-family:'Segoe UI', Arial, sans-serif;
+    background-image:
+        linear-gradient(to bottom right, rgba(2, 10, 18, 0.72), rgba(0, 0, 0, 0.72)),
+        url('/static/college%20logo.jpeg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    color:white;
+}
+
+.container{
+    width:90%;
+    margin:40px auto;
+    background:rgba(11, 17, 32, 0.88);
+    padding:20px;
+    border-radius:10px;
+    border: 1px solid rgba(0, 242, 255, 0.25);
+    box-shadow: 0 20px 50px rgba(0, 8, 16, 0.45);
+}
+
+h2{
+    text-align:center;
+    color:#d8f8ff;
+}
+
+.brand-bar {
+    display:flex;
+    align-items:center;
+    gap:12px;
+    margin-bottom:18px;
+    padding:10px 12px;
+    border-radius:10px;
+    border:1px solid rgba(0, 242, 255, 0.25);
+    background:rgba(0, 0, 0, 0.25);
+}
+
+.brand-logo {
+    width:54px;
+    height:54px;
+    object-fit:cover;
+    border-radius:8px;
+    border:1px solid rgba(0, 242, 255, 0.35);
+    box-shadow:
+        0 0 12px rgba(0, 242, 255, 0.35),
+        0 0 18px rgba(167, 139, 250, 0.24),
+        0 0 24px rgba(74, 222, 128, 0.2);
+    animation: totalBillPeacockGlow 3.2s ease-in-out infinite;
+    filter: saturate(1.15);
+}
+
+@keyframes totalBillPeacockGlow {
+    0%, 100% {
+        transform: scale(1);
+        box-shadow:
+            0 0 12px rgba(0, 242, 255, 0.35),
+            0 0 18px rgba(167, 139, 250, 0.24),
+            0 0 24px rgba(74, 222, 128, 0.2);
+    }
+    50% {
+        transform: scale(1.06);
+        box-shadow:
+            0 0 16px rgba(56, 189, 248, 0.5),
+            0 0 24px rgba(239, 68, 68, 0.26),
+            0 0 30px rgba(250, 204, 21, 0.24);
+    }
+}
+
+.brand-text h3 {
+    margin:0;
+    color:#d8f8ff;
+    font-size:0.98rem;
+}
+
+.brand-text p {
+    margin:2px 0 0;
+    color:#9ad7e8;
+    font-size:0.8rem;
+}
+
+table{
+    width:100%;
+    border-collapse:collapse;
+    background:#1b2436;
+}
+
+th,td{
+    padding:10px;
+    border-bottom:1px solid #2d3748;
+    text-align:left;
+}
+
+th{
+    background:#0b1120;
+}
+
+button{
+    background:#22c55e;
+    border:1px solid #22c55e;
+    color:white;
+    padding:6px 12px;
+    border-radius:6px;
+    cursor:pointer;
+}
+
+.preview-box{
+    margin-top:25px;
+    background:#020617;
+    padding:20px;
+    border-radius:10px;
+    display:none;
+}
+
+.capture-form {
+    margin-bottom: 18px;
+    background: rgba(2, 6, 23, 0.92);
+    border: 1px solid rgba(56, 189, 248, 0.35);
+    border-radius: 10px;
+    padding: 14px;
+    display: none;
+}
+
+.capture-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+}
+
+.capture-grid input {
+    width: 100%;
+    background: #0b1120;
+    color: #fff;
+    border: 1px solid #334155;
+    border-radius: 6px;
+    padding: 8px 10px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+<div class="brand-bar">
+    <img src="{{ url_for('static', filename='college logo.jpeg') }}" alt="College Logo" class="brand-logo">
+    <div class="brand-text">
+        <h3>Renganayagi Varatharaj College of Engineering</h3>
+        <p>Fee Management Portal</p>
+    </div>
+</div>
+
+<h2>Total Bills</h2>
+
+<!-- FILE IMPORT + DATE FILTER SECTION -->
+<div id="importSection" style="margin-bottom: 20px; display:flex; justify-content:space-between; align-items:center; gap:12px; flex-wrap:wrap; position: relative; z-index: 100; pointer-events: auto;">
+    <div style="display:flex; align-items:center; gap:8px;">
+        <label for="billDateFilter" style="color:#d8f8ff; font-size:0.9rem;">Filter by Date:</label>
+        <input type="date" id="billDateFilter" style="background:#0b1120; color:white; border:1px solid #2d3748; border-radius:6px; padding:6px 10px;">
+        <button type="button" onclick="applyDateFilter()">Filter</button>
+        <button type="button" onclick="clearDateFilter()" style="background:#334155; border:1px solid #334155;">Reset</button>
+    </div>
+
+    <div>
+        <input type="file" id="billCameraInput" accept="image/*" capture="environment" style="display:none" onchange="handleReceiptCapture(this.files)">
+        <button type="button" tabindex="0" aria-label="Import Bill Using Camera" onclick="document.getElementById('billCameraInput').click(); return false;" style="background:#3b82f6; border:1px solid #3b82f6; color:white; padding:8px 16px; border-radius:6px; cursor:pointer; pointer-events: auto; z-index: 100;">+ Import Bills</button>
+    </div>
+</div>
+
+<div id="captureForm" class="capture-form">
+    <h3 style="margin:0 0 10px; color:#d8f8ff;">Import Captured Bill</h3>
+    <div style="display:flex; gap:14px; align-items:flex-start; flex-wrap:wrap;">
+        <img id="capturedImagePreview" alt="Captured Receipt" style="display:none; width:140px; height:140px; object-fit:cover; border-radius:8px; border:1px solid #334155;">
+        <div style="flex:1; min-width:280px;">
+            <div class="capture-grid">
+                <input type="text" id="capStudentName" placeholder="Student Name">
+                <input type="text" id="capDepartment" placeholder="Department">
+                <input type="date" id="capDueDate">
+                <input type="number" id="capAmount" placeholder="Amount">
+            </div>
+            <div style="margin-top:10px; display:flex; gap:8px;">
+                <button type="button" onclick="saveCapturedBill()">Save to Total Bills</button>
+                <button type="button" onclick="cancelCaptureImport()" style="background:#334155; border-color:#334155;">Cancel</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<table id="billTable">
+<thead>
+<tr>
+<th>STUDENT NAME</th>
+<th>DEPARTMENT</th>
+<th>FEES TYPE</th>
+<th>AMOUNT</th>
+<th>DUE DATE</th>
+<th>Preview</th>
+</tr>
+</thead>
+
+<tbody></tbody>
+</table>
+
+<div id="previewBox" class="preview-box"></div>
+
+</div>
+
+<script>
+let data = JSON.parse(localStorage.getItem("bills")) || []
+
+let body = document.querySelector("#billTable tbody")
+let preview = document.getElementById("previewBox")
+let filteredData = [...data]
+let capturedReceiptImage = ""
+
+function renderTable(rows) {
+    body.innerHTML = "";
+
+    rows.forEach(b => {
+        let tr = document.createElement("tr")
+
+        tr.innerHTML = `
+        <td>${b.name}</td>
+        <td>${b.dept}</td>
+        <td>${b.type}</td>
+        <td>Rs.${b.amount}</td>
+        <td>${b.date}</td>
+        <td><button onclick="showBill(${b.id})">Preview</button></td>
+        `
+
+        body.appendChild(tr)
+    })
+}
+
+function applyDateFilter() {
+    const selectedDate = document.getElementById("billDateFilter").value;
+    if (!selectedDate) {
+        filteredData = [...data];
+    } else {
+        filteredData = data.filter(b => String(b.date || "").trim() === selectedDate);
+    }
+    renderTable(filteredData);
+}
+
+function clearDateFilter() {
+    document.getElementById("billDateFilter").value = "";
+    filteredData = [...data];
+    renderTable(filteredData);
+}
+
+function showBill(id){
+    let b = data.find(x => x.id == id)
+    if (!b) return;
+
+    preview.style.display="block"
+
+    preview.innerHTML = `
+    <h3>Bill Details</h3>
+    <p>Name : ${b.name}</p>
+    <p>Register No : ${b.reg}</p>
+    <p>Department : ${b.dept}</p>
+    <p>Year / Sem : ${b.year}</p>
+    <p>Fees Type : ${b.type}</p>
+    <p>Amount : Rs.${b.amount}</p>
+    <p>Date : ${b.date}</p>
+    <p>Payment Mode : ${b.mode}</p>
+    ${b.receiptImage ? `<p style="margin-top:10px;">Receipt Image:</p><img src="${b.receiptImage}" alt="Receipt" style="max-width:260px; border-radius:8px; border:1px solid #334155;">` : ''}
+    `
+}
+
+function handleReceiptCapture(files) {
+    const file = files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+
+    reader.onload = function(e) {
+        capturedReceiptImage = e.target.result || "";
+        document.getElementById("captureForm").style.display = "block";
+        const img = document.getElementById("capturedImagePreview");
+        img.src = capturedReceiptImage;
+        img.style.display = "block";
+    };
+
+    reader.readAsDataURL(file);
+}
+
+function saveCapturedBill() {
+    const name = document.getElementById("capStudentName").value.trim();
+    const dept = document.getElementById("capDepartment").value.trim();
+    const dueDate = document.getElementById("capDueDate").value;
+    const amount = parseFloat(document.getElementById("capAmount").value || "0");
+
+    if (!capturedReceiptImage) {
+        alert("Please capture/upload the receipt image first.");
+        return;
+    }
+    if (!name || !dept || !dueDate || !amount) {
+        alert("Please fill Student Name, Department, Due Date, and Amount.");
+        return;
+    }
+
+    const newBill = {
+        id: Date.now(),
+        name: name,
+        reg: "-",
+        dept: dept,
+        year: "-",
+        type: "Imported Bill",
+        amount: amount,
+        date: dueDate,
+        mode: "Receipt Upload",
+        receiptImage: capturedReceiptImage
+    };
+
+    data.push(newBill);
+    localStorage.setItem("bills", JSON.stringify(data));
+    clearDateFilter();
+    cancelCaptureImport();
+}
+
+function cancelCaptureImport() {
+    capturedReceiptImage = "";
+    document.getElementById("captureForm").style.display = "none";
+    document.getElementById("capturedImagePreview").style.display = "none";
+    document.getElementById("capturedImagePreview").src = "";
+    document.getElementById("capStudentName").value = "";
+    document.getElementById("capDepartment").value = "";
+    document.getElementById("capDueDate").value = "";
+    document.getElementById("capAmount").value = "";
+    document.getElementById("billCameraInput").value = "";
+}
+
+renderTable(filteredData);
+</script>
+<script src="{{ url_for('static', filename='glow-effects.js') }}"></script>
+
+</body>
+</html>
+

@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='glow-effects.css') }}">
+
+    <style>
+
+        /* Ensuring btn-neon style is robust */
+
+        .btn-neon {
+
+            padding: 15px 20px;
+
+            color: #00f2ff;
+
+            border: 2px solid #00f2ff;
+
+            border-radius: 10px;
+
+            text-transform: uppercase;
+
+            font-weight: bold;
+
+            transition: all 0.3s;
+
+            cursor: pointer;
+
+            background: transparent;
+
+            font-family: inherit;
+
+            font-size: 1rem;
+
+            display: inline-block;
+
+            text-align: center;
+
+        }
+
+        .btn-neon:hover {
+
+            box-shadow: 0 0 20px #00f2ff;
+
+            background: #00f2ff;
+
+            color: #0f172a;
+
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+    <div class="main-wrapper">
+
+        <div class="left-side"><h1>WELCOME</h1></div>
+
+        <div class="right-side" style="text-align: center;">
+            <div class="brand-bar" style="text-align:left;">
+                <img src="{{ url_for('static', filename='college logo.jpeg') }}" alt="College Logo" class="brand-logo">
+                <div class="brand-text">
+                    <h3>Renganayagi Varatharaj College of Engineering</h3>
+                    <p>Fee Management Portal</p>
+                </div>
+            </div>
+
+            <h1 style="color: #00f2ff; text-shadow: 0 0 20px #00f2ff;">{{ message }}</h1>
+
+            <p style="color: white;">You have accessed the college fee management portal.</p>
+
+           
+
+            <div style="margin-top: 20px;">
+
+                <a href="/" class="btn-neon" style="text-decoration:none; width:150px; margin: 0 10px;">Go Back</a>
+
+               
+
+                <button class="btn-neon" style="width:150px; margin: 0 10px;" onclick="openDashboard()">Let's Go</button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+
+    <script src="{{ url_for('static', filename='page-transitions.js') }}"></script>
+    <script src="{{ url_for('static', filename='glow-effects.js') }}"></script>
+    <script>
+
+        function openDashboard() {
+            navigateWithTransition("{{ url_for('dashboard') }}");
+
+        }
+
+    </script>
+
+</body>
+
+</html>
+

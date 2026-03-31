@@ -1,0 +1,371 @@
+/* Base Styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+    background-image:
+        linear-gradient(to bottom right, rgba(2, 10, 18, 0.72), rgba(0, 0, 0, 0.72)),
+        url('/static/college%20logo.jpeg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    position: relative;
+}
+
+body::before {
+    content: "";
+    position: fixed;
+    inset: -25%;
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+    background-size: 22px 22px;
+    opacity: 0.18;
+    pointer-events: none;
+}
+
+body::after {
+    content: "";
+    position: fixed;
+    inset: 0;
+    background: linear-gradient(to bottom right, rgba(0, 242, 255, 0.04), rgba(0, 0, 0, 0.45));
+    pointer-events: none;
+}
+
+/* The Main Container */
+.main-wrapper {
+    position: relative;
+    width: 850px;
+    height: 700px;
+    background: rgba(255, 255, 255, 0.07);
+    display: flex;
+    border-radius: 15px;
+    box-shadow: 0 20px 60px rgba(0, 8, 16, 0.55), 0 0 35px rgba(0, 242, 255, 0.12);
+    border: 1px solid rgba(0, 242, 255, 0.3);
+    overflow: auto;
+    backdrop-filter: blur(12px);
+    z-index: 1;
+    transform-style: preserve-3d;
+    backface-visibility: hidden;
+}
+
+
+.main-wrapper {
+    transition: opacity 0.8s ease, transform 0.8s ease;
+    /* மற்ற ஸ்டைல்கள்... */
+}
+
+/* Shared page transformations (index/login/register/success) */
+body.page-enter .main-wrapper {
+    opacity: 0;
+    transform: translateX(70px) rotateY(-10deg) scale(0.98);
+}
+
+body.page-enter.page-enter-active .main-wrapper {
+    opacity: 1;
+    transform: translateX(0) rotateY(0deg) scale(1);
+    transition: transform 0.55s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.45s ease;
+}
+
+body.page-exit .main-wrapper {
+    opacity: 0;
+    transform: translateX(-70px) rotateY(10deg) scale(0.96);
+    transition: transform 0.45s cubic-bezier(0.65, 0, 0.35, 1), opacity 0.4s ease;
+}
+
+body.page-exit .left-side {
+    transform: translateX(24px);
+    transition: transform 0.45s cubic-bezier(0.65, 0, 0.35, 1);
+}
+
+.top-loading-bar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 3px;
+    width: 0%;
+    background: #00f2ff;
+    box-shadow: 0 0 10px #00f2ff;
+    z-index: 9999;
+    transition: width 0.6s ease-in-out;
+}
+
+
+/* The Slanted "Welcome" Side (Left) */
+.left-side {
+    flex: 1;
+    background: linear-gradient(135deg, #00f2ff, #0066ff);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    z-index: 2;
+    /* This creates the slanted effect from the video */
+    clip-path: polygon(0 0, 100% 0, 80% 100%, 0% 100%);
+    transition: transform 0.6s ease-in-out;
+}
+
+.left-side h1 {
+    font-size: 3rem;
+    letter-spacing: 5px;
+    text-shadow: 2px 2px 10px rgba(0,0,0,0.3);
+}
+
+.brand-bar {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 20px;
+    padding: 10px 12px;
+    border-radius: 10px;
+    border: 1px solid rgba(0, 242, 255, 0.28);
+    background: rgba(0, 0, 0, 0.22);
+}
+
+.brand-logo {
+    width: 52px;
+    height: 52px;
+    border-radius: 8px;
+    object-fit: cover;
+    border: 1px solid rgba(0, 242, 255, 0.35);
+    box-shadow:
+        0 0 12px rgba(0, 242, 255, 0.35),
+        0 0 18px rgba(167, 139, 250, 0.24),
+        0 0 24px rgba(74, 222, 128, 0.2);
+    animation: peacockLogoGlow 3.2s ease-in-out infinite;
+    filter: saturate(1.15);
+}
+
+@keyframes peacockLogoGlow {
+    0%, 100% {
+        transform: scale(1);
+        box-shadow:
+            0 0 12px rgba(0, 242, 255, 0.35),
+            0 0 18px rgba(167, 139, 250, 0.24),
+            0 0 24px rgba(74, 222, 128, 0.2);
+    }
+    50% {
+        transform: scale(1.06);
+        box-shadow:
+            0 0 16px rgba(56, 189, 248, 0.5),
+            0 0 24px rgba(239, 68, 68, 0.26),
+            0 0 30px rgba(250, 204, 21, 0.24);
+    }
+}
+
+.brand-text h3 {
+    font-size: 0.95rem;
+    line-height: 1.2;
+    color: #d8f8ff;
+}
+
+.brand-text p {
+    font-size: 0.78rem;
+    color: #9ad7e8;
+    margin-top: 2px;
+}
+
+/* The Form Side (Right) */
+.right-side {
+    flex: 1.2;
+    padding: 40px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    color: white;
+    background: transparent;
+}
+
+/* Form Styling */
+.field-group {
+    margin-bottom: 20px;
+}
+
+.field-label {
+    display: block;
+    margin-bottom: 5px;
+    color: #00f2ff;
+    font-size: 0.9rem;
+}
+
+.form-input {
+    width: 100%;
+    padding: 12px;
+    background: rgba(255, 255, 255, 0.1);
+    border: none;
+    border-bottom: 2px solid #00f2ff;
+    color: white;
+    outline: none;
+    border-radius: 5px 5px 0 0;
+    transition: 0.3s;
+}
+
+.form-input:focus {
+    background: rgba(255, 255, 255, 0.2);
+    box-shadow: 0 5px 15px rgba(0, 242, 255, 0.1);
+}
+
+/* Neon Button */
+.btn-neon {
+    width: 100%;
+    padding: 12px;
+    background: transparent;
+    border: 2px solid #00f2ff;
+    color: #00f2ff;
+    font-weight: bold;
+    text-transform: uppercase;
+    cursor: pointer;
+    border-radius: 25px;
+    transition: 0.4s;
+    margin-top: 10px;
+}
+
+.btn-neon:hover {
+    background: #00f2ff;
+    color: #02121d;
+    box-shadow: 0 0 20px #00f2ff;
+}
+
+/* Role Cards for index.html */
+.role-card {
+    display: block;
+    text-decoration: none;
+    color: white;
+    font-weight: 800;
+    padding: 15px;
+    margin-bottom: 10px;
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.1);
+    border-left: 5px solid #00f2ff;
+    text-shadow: 0 0 8px rgba(255, 255, 255, 0.45), 0 0 14px rgba(255, 255, 255, 0.35);
+    transition: 0.3s;
+    position: relative;
+    overflow: hidden;
+    z-index: 0;
+    isolation: isolate;
+}
+
+.role-card:hover {
+    background: rgba(0, 242, 255, 0.2);
+    transform: translateX(10px);
+}
+
+.role-card::before {
+    content: "";
+    position: absolute;
+    inset: -2px;
+    border-radius: 12px;
+    background: conic-gradient(
+        from 0deg,
+        rgba(0, 242, 255, 0),
+        rgba(0, 242, 255, 0.9),
+        rgba(167, 139, 250, 0.85),
+        rgba(74, 222, 128, 0.85),
+        rgba(0, 242, 255, 0)
+    );
+    filter: blur(6px);
+    opacity: 0;
+    z-index: -2;
+    animation: roleCardGlowRotate 2.8s linear infinite;
+    transition: opacity 0.25s ease;
+}
+
+.role-card::after {
+    content: "";
+    position: absolute;
+    inset: 1px;
+    border-radius: 10px;
+    background: rgba(15, 23, 42, 0.78);
+    z-index: -1;
+}
+
+.role-card:hover::before,
+.role-card:focus-visible::before {
+    opacity: 1;
+}
+
+@keyframes roleCardGlowRotate {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+/* Login Link Styling */
+.right-side a {
+    color: #00f2ff !important;
+    text-align: center;
+    display: block !important;
+    margin-top: 10px;
+    font-size: 0.8rem;
+    text-decoration: none;
+    transition: 0.3s;
+    visibility: visible !important;
+    opacity: 1 !important;
+}
+
+.right-side a:hover {
+    text-decoration: underline;
+    color: #00ffff;
+}
+
+/* Top-Left Login Button */
+.login-btn-top-left {
+    position: fixed !important;
+    top: 12px !important;
+    left: 12px !important;
+    padding: 8px 16px;
+    background: transparent;
+    border: 2px solid #00f2ff;
+    color: #00f2ff;
+    text-decoration: none;
+    border-radius: 18px;
+    font-size: 0.9rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.18s ease;
+    z-index: 3000 !important;
+    display: inline-flex !important;
+    align-items: center;
+    gap: 8px;
+    pointer-events: auto !important;
+}
+
+.login-btn-top-left:hover {
+    background: #00f2ff;
+    color: #02121d;
+    box-shadow: 0 0 20px #00f2ff;
+    transform: translateX(-5px);
+}
+
+@media (max-width: 640px) {
+    .login-btn-top-left {
+        top: 8px !important;
+        left: 8px !important;
+        padding: 6px 12px;
+        font-size: 0.85rem;
+    }
+}
+
+@media (max-width: 900px) {
+    .main-wrapper {
+        width: 95vw;
+        height: 92vh;
+        flex-direction: column;
+    }
+
+    .left-side {
+        min-height: 180px;
+        clip-path: none;
+    }
+
+    .right-side {
+        padding: 24px;
+    }
+}

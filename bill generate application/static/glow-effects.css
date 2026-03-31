@@ -1,0 +1,119 @@
+.ui-glow-target {
+    position: relative;
+    overflow: hidden;
+    isolation: isolate;
+    transition: transform 0.28s ease, box-shadow 0.3s ease, filter 0.3s ease;
+    will-change: transform, box-shadow;
+}
+
+.ui-glow-target::after {
+    content: "";
+    position: absolute;
+    left: var(--mx, 50%);
+    top: var(--my, 50%);
+    width: 14px;
+    height: 14px;
+    transform: translate(-50%, -50%);
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.35), rgba(56, 189, 248, 0));
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+}
+
+.ui-glow-target:hover::after,
+.ui-glow-target:focus-visible::after {
+    opacity: 1;
+}
+
+.ui-glow-target:hover,
+.ui-glow-target:focus-visible {
+    transform: translateY(-2px);
+    box-shadow: 0 0 0 1px rgba(56, 189, 248, 0.35), 0 0 20px rgba(56, 189, 248, 0.35);
+    filter: saturate(1.08);
+}
+
+.ui-glow-target .ui-ripple {
+    position: absolute;
+    border-radius: 999px;
+    transform: translate(-50%, -50%) scale(0);
+    background: radial-gradient(circle, rgba(56, 189, 248, 0.48), rgba(56, 189, 248, 0.04) 70%, transparent 72%);
+    pointer-events: none;
+    animation: ui-ripple 0.62s ease-out forwards;
+}
+
+@keyframes ui-ripple {
+    to {
+        transform: translate(-50%, -50%) scale(1);
+        opacity: 0;
+    }
+}
+
+.main-wrapper {
+    animation: wrapperGlowPulse 6s ease-in-out infinite;
+}
+
+@keyframes wrapperGlowPulse {
+    0% {
+        box-shadow: 0 20px 60px rgba(0, 8, 16, 0.55), 0 0 35px rgba(0, 242, 255, 0.12);
+    }
+    50% {
+        box-shadow: 0 24px 62px rgba(0, 8, 16, 0.62), 0 0 42px rgba(0, 242, 255, 0.25);
+    }
+    100% {
+        box-shadow: 0 20px 60px rgba(0, 8, 16, 0.55), 0 0 35px rgba(0, 242, 255, 0.12);
+    }
+}
+
+body.page-exit .ui-glow-target {
+    pointer-events: none;
+}
+
+.nav-rotate-trigger {
+    animation: navRotateOut 0.42s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    transform-origin: center;
+}
+
+@keyframes navRotateOut {
+    0% {
+        transform: rotate(0deg) scale(1);
+        filter: brightness(1);
+    }
+    40% {
+        transform: rotate(-7deg) scale(1.04);
+        filter: brightness(1.12);
+    }
+    100% {
+        transform: rotate(9deg) scale(0.96);
+        filter: brightness(0.9);
+    }
+}
+
+#click-light-fx {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 9998;
+    opacity: 0;
+    background:
+        radial-gradient(circle at var(--fx-x, 50%) var(--fx-y, 50%), rgba(56, 189, 248, 0.28), rgba(56, 189, 248, 0) 24%),
+        radial-gradient(circle at calc(var(--fx-x, 50%) + 6%) calc(var(--fx-y, 50%) - 8%), rgba(167, 139, 250, 0.22), rgba(167, 139, 250, 0) 22%),
+        conic-gradient(from 15deg at var(--fx-x, 50%) var(--fx-y, 50%),
+            rgba(56, 189, 248, 0.0) 0deg,
+            rgba(56, 189, 248, 0.18) 30deg,
+            rgba(250, 204, 21, 0.18) 90deg,
+            rgba(239, 68, 68, 0.14) 145deg,
+            rgba(74, 222, 128, 0.16) 220deg,
+            rgba(56, 189, 248, 0.0) 360deg);
+    mix-blend-mode: screen;
+    filter: blur(1px);
+}
+
+#click-light-fx.active {
+    animation: buttonLightningFlash 0.42s ease-out forwards;
+}
+
+@keyframes buttonLightningFlash {
+    0% { opacity: 0; }
+    30% { opacity: 1; }
+    100% { opacity: 0; }
+}

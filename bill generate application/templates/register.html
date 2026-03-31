@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='glow-effects.css') }}">
+
+</head>
+
+<body>
+
+    <a href="{{ url_for('login', role='STUDENT') }}" class="login-btn-top-left"> Back to Login</a>
+
+    <div class="main-wrapper">
+
+        <div class="left-side"><h1>WELCOME</h1></div>
+
+        <div class="right-side">
+            <div class="brand-bar">
+                <img src="{{ url_for('static', filename='college logo.jpeg') }}" alt="College Logo" class="brand-logo">
+                <div class="brand-text">
+                    <h3>Renganayagi Varatharaj College of Engineering</h3>
+                    <p>Fee Management Portal</p>
+                </div>
+            </div>
+
+            <h2 style="margin-bottom: 20px;">STUDENT REGISTRATION</h2>
+
+            <form method="POST">
+
+                <div class="field-group">
+
+                    <label class="field-label">Student Name</label>
+
+                    <input type="text" name="name" class="form-input" required>
+
+                </div>
+
+                <div class="field-group">
+
+                    <label class="field-label">Department</label>
+
+                    <select name="dept" class="form-input" style="background: #02121d;" required>
+
+                        <option>AI&DS</option><option>CSE</option><option>MECH</option>
+
+                        <option>EEE</option><option>ECE</option><option>CSBS</option><option>IT</option>
+
+                    </select>
+
+                </div>
+
+                <div class="field-group"><label class="field-label">Email ID</label><input type="email" name="email" class="form-input" placeholder="email"></div>
+
+                <div class="field-group"><label class="field-label">Year</label><input type="text" name="year" class="form-input" required></div>
+
+                <div class="field-group"><label class="field-label">Password</label><input type="password" name="password" class="form-input" required></div>
+
+                <button type="submit" class="btn-neon">Register</button>
+
+            </form>
+
+        </div>
+
+    </div>
+
+    <script src="{{ url_for('static', filename='page-transitions.js') }}"></script>
+    <script src="{{ url_for('static', filename='glow-effects.js') }}"></script>
+    <script>
+        (function () {
+            history.pushState(null, '', location.href);
+            window.addEventListener('popstate', function () {
+                history.pushState(null, '', location.href);
+            });
+        })();
+    </script>
+
+</body>
+
+</html> 
+

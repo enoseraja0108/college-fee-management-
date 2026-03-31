@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='glow-effects.css') }}">
+</head>
+<body>
+    <div class="main-wrapper">
+        <div class="left-side"><h1>WELCOME</h1></div>
+        <div class="right-side">
+            <h2 style="margin-bottom: 30px;">LOGIN</h2>
+            <form method="POST">
+                <div class="field-group"><label class="field-label">Username</label><input type="text" name="username" class="form-input" placeholder="username"></div>
+                <div class="field-group"><label class="field-label">Password</label><input type="password" name="password" class="form-input" placeholder="password"></div>
+                <button type="submit" class="btn-neon">Login</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+    <script src="{{ url_for('static', filename='page-transitions.js') }}"></script>
+    <script src="{{ url_for('static', filename='glow-effects.js') }}"></script>
+    <script>
+        (function () {
+            history.pushState(null, '', location.href);
+            window.addEventListener('popstate', function () {
+                history.pushState(null, '', location.href);
+            });
+        })();
+    </script>
+</body>
+</html>

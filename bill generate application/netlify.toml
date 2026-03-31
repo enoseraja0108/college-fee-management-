@@ -1,0 +1,47 @@
+# Netlify Configuration for Bill Generate Application
+
+[build]
+command = "pip install -r requirements.txt"
+functions = "api"
+publish = "."
+
+[build.environment]
+PYTHON_VERSION = "3.12"
+
+# Redirect all routes to the Flask app
+[[redirects]]
+from = "/*"
+to = "/api/index"
+status = 200
+force = false
+
+# Configure the functions
+[functions]
+directory = "api"
+node_bundler = "none"
+
+# Environment variables (set these in Netlify UI or via CLI)
+[context.production.environment]
+DB_PATH = "/tmp/rvce_fee.db"
+
+[context.preview.environment]
+DB_PATH = "/tmp/rvce_fee.db"
+
+[context.deploy-preview.environment]
+DB_PATH = "/tmp/rvce_fee.db"
+
+# Ensure static files are cached appropriately
+[[headers]]
+for = "/static/*"
+[headers.values]
+Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+for = "/*.css"
+[headers.values]
+Content-Type = "text/css"
+
+[[headers]]
+for = "*.js"
+[headers.values]
+Content-Type = "application/javascript"

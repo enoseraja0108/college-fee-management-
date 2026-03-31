@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='glow-effects.css') }}">
+
+</head>
+
+<body>
+
+    <div class="main-wrapper">
+
+        <div class="left-side"><h1>WELCOME</h1></div>
+
+        <div class="right-side">
+            <div class="brand-bar">
+                <img src="{{ url_for('static', filename='college logo.jpeg') }}" alt="College Logo" class="brand-logo">
+                <div class="brand-text">
+                    <h3>Renganayagi Varatharaj College of Engineering</h3>
+                    <p>Fee Management Portal</p>
+                </div>
+            </div>
+
+            <h2 style="text-align:center; color:#00f2ff;">RVCE FEE MANAGEMENT SYSTEM</h2>
+
+            <p style="text-align:center; margin-bottom:30px;">Choose your role to proceed</p>
+
+            <a href="{{ url_for('register') }}" class="role-card">RVCE STUDENT</a>
+
+            <a href="{{ url_for('login', role='ADMIN') }}" class="role-card">RVCE ADMIN</a>
+
+            <a href="{{ url_for('login', role='OWNER') }}" class="role-card">RVCE OWNER</a>
+
+        </div>
+
+    </div>
+
+    <script src="{{ url_for('static', filename='page-transitions.js') }}"></script>
+    <script src="{{ url_for('static', filename='glow-effects.js') }}"></script>
+    <script>
+        function playPeacockClickSound() {
+            try {
+                const AudioCtx = window.AudioContext || window.webkitAudioContext;
+                if (!AudioCtx) return;
+                const ctx = new AudioCtx();
+                const now = ctx.currentTime;
+
+                // Short bird-like two-part chirp
+                const osc1 = ctx.createOscillator();
+                const gain1 = ctx.createGain();
+                osc1.type = 'triangle';
+                osc1.frequency.setValueAtTime(1050, now);
+                osc1.frequency.exponentialRampToValueAtTime(1480, now + 0.08);
+                gain1.gain.setValueAtTime(0.0001, now);
+                gain1.gain.exponentialRampToValueAtTime(0.09, now + 0.015);
+                gain1.gain.exponentialRampToValueAtTime(0.0001, now + 0.12);
+                osc1.connect(gain1).connect(ctx.destination);
+                osc1.start(now);
+                osc1.stop(now + 0.14);
+
+                const osc2 = ctx.createOscillator();
+                const gain2 = ctx.createGain();
+                osc2.type = 'sine';
+                osc2.frequency.setValueAtTime(860, now + 0.1);
+                osc2.frequency.exponentialRampToValueAtTime(1260, now + 0.19);
+                gain2.gain.setValueAtTime(0.0001, now + 0.1);
+                gain2.gain.exponentialRampToValueAtTime(0.06, now + 0.12);
+                gain2.gain.exponentialRampToValueAtTime(0.0001, now + 0.24);
+                osc2.connect(gain2).connect(ctx.destination);
+                osc2.start(now + 0.1);
+                osc2.stop(now + 0.25);
+            } catch (e) {
+                // Keep navigation unaffected if audio is blocked
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            document.querySelectorAll('.role-card').forEach(function (btn) {
+                btn.addEventListener('click', function () {
+                    playPeacockClickSound();
+                }, { capture: true });
+            });
+        });
+
+        (function () {
+            history.pushState(null, '', location.href);
+            window.addEventListener('popstate', function () {
+                history.pushState(null, '', location.href);
+            });
+        })();
+    </script>
+
+</body>
+
+</html>
+

@@ -1,0 +1,1635 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>College Fee Management</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='glow-effects.css') }}">
+</head>
+<body data-role="{{ role }}" data-user-id="{{ user_id }}">
+    
+    <style>
+        :root {
+            /* Neon/Cyberpunk Palette */
+            --bg-color: #05070a;
+            --sidebar-color: #0b1120;
+            --card-color: #1e293b;
+            --text-color: #f1f5f9;
+            
+            /* Enhanced Neon Accents */
+            --primary-accent: #38bdf8; /* Sky Blue */
+            --secondary-accent: #a78bfa; /* Vibrant Violet */
+            --neon-glow: 0 0 15px rgba(56, 189, 248, 0.5);
+            --neon-glow-intense: 0 0 25px rgba(56, 189, 248, 0.7);
+            
+            --revenue-glow: #4ade80;
+            --overdue-glow: #ef4444;
+            --font-family: 'Segoe UI', system-ui, sans-serif;
+        }
+
+        body {
+            margin: 0;
+            font-family: var(--font-family);
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+            /* Smooth background transition */
+            transition: background 0.5s ease;
+        }
+
+        /* Lightning Glow Background */
+        .lightning-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background: radial-gradient(circle at center, #1a1a2e 0%, #0a0a0c 100%);
+            overflow: hidden;
+        }
+
+        .lightning-bg::before, .lightning-bg::after {
+            content: '';
+            position: absolute;
+            width: 300px;
+            height: 300px;
+            background: rgba(0, 255, 255, 0.1);
+            filter: blur(100px);
+            border-radius: 50%;
+            animation: glowMove 8s infinite alternate;
+        }
+
+        .lightning-bg::after {
+            background: rgba(138, 43, 226, 0.1);
+            animation: glowMove 10s infinite alternate-reverse;
+            top: 50%;
+            left: 50%;
+        }
+
+        @keyframes glowMove {
+            0% { transform: translate(-50%, -50%) scale(1); }
+            100% { transform: translate(50%, 50%) scale(1.5); }
+        }
+
+        /* Sidebar - Glassmorphism */
+        .sidebar {
+            width: 250px;
+            background-color: var(--sidebar-color);
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            border-right: 1px solid #1e293b;
+            backdrop-filter: blur(10px);
+            z-index: 10;
+        }
+
+        /* Logo and Title Container */
+        .logo-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .logo-wing-wrap {
+            position: relative;
+            width: 118px;
+            height: 118px;
+            border-radius: 50%;
+            display: grid;
+            place-items: center;
+            margin-bottom: 14px;
+            overflow: visible;
+        }
+
+        .logo-wing-wrap::before {
+            content: "";
+            position: absolute;
+            inset: -14px;
+            border-radius: 50%;
+            background:
+                conic-gradient(
+                    from 0deg,
+                    rgba(56, 189, 248, 0.0) 0deg,
+                    rgba(56, 189, 248, 0.75) 55deg,
+                    rgba(167, 139, 250, 0.85) 130deg,
+                    rgba(239, 68, 68, 0.85) 190deg,
+                    rgba(74, 222, 128, 0.85) 255deg,
+                    rgba(250, 204, 21, 0.8) 320deg,
+                    rgba(56, 189, 248, 0.0) 360deg
+                );
+            filter: blur(7px) saturate(1.15);
+            opacity: 0.8;
+            z-index: 0;
+            animation: peacockWingSpin 6s linear infinite;
+        }
+
+        .logo-wing-wrap::after {
+            content: "";
+            position: absolute;
+            inset: -6px;
+            border-radius: 50%;
+            border: 1px solid rgba(56, 189, 248, 0.45);
+            box-shadow: 0 0 18px rgba(56, 189, 248, 0.35);
+            z-index: 1;
+            animation: peacockWingPulse 2.8s ease-in-out infinite;
+        }
+
+        .logo-img {
+            width: 98px;
+            height: 98px;
+            object-fit: cover;
+            border-radius: 50%;
+            border: 2px solid rgba(56, 189, 248, 0.75);
+            box-shadow: 0 0 14px rgba(56, 189, 248, 0.45);
+            position: relative;
+            z-index: 2;
+            filter: saturate(1.08);
+            animation: dashboardPeacockLogoGlow 2.8s ease-in-out infinite;
+        }
+
+        @keyframes peacockWingSpin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        @keyframes peacockWingPulse {
+            0%, 100% { transform: scale(1); opacity: 0.7; }
+            50% { transform: scale(1.06); opacity: 1; }
+        }
+
+        @keyframes dashboardPeacockLogoGlow {
+            0%, 100% {
+                box-shadow:
+                    0 0 14px rgba(56, 189, 248, 0.45),
+                    0 0 22px rgba(167, 139, 250, 0.28);
+            }
+            50% {
+                box-shadow:
+                    0 0 18px rgba(56, 189, 248, 0.62),
+                    0 0 30px rgba(239, 68, 68, 0.24),
+                    0 0 34px rgba(250, 204, 21, 0.22);
+            }
+        }
+
+        .header-title {
+            font-size: 1rem;
+            font-weight: 800;
+            color: var(--primary-accent);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            text-shadow: var(--neon-glow);
+            line-height: 1.2;
+        }
+
+        .nav-btn {
+            background: none;
+            border: 1px solid transparent;
+            color: #94a3b8;
+            padding: 15px;
+            text-align: left;
+            cursor: pointer;
+            border-radius: 8px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            font-size: 0.95rem;
+            font-weight: 600;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .nav-btn:hover {
+            background-color: rgba(56, 189, 248, 0.1);
+            color: white;
+            border-color: rgba(56, 189, 248, 0.3);
+            transform: translateX(5px);
+        }
+
+        .nav-btn.active {
+            background: linear-gradient(90deg, rgba(56, 189, 248, 0.15), transparent);
+            box-shadow: var(--neon-glow);
+            border-color: var(--primary-accent);
+            color: white;
+        }
+        
+        .nav-btn.active::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 10%;
+            height: 80%;
+            width: 4px;
+            background: var(--primary-accent);
+            border-radius: 0 4px 4px 0;
+            box-shadow: var(--neon-glow);
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background:
+                linear-gradient(rgba(2,6,23,0.6), rgba(2,6,23,0.9)),
+                url("{{ url_for('static', filename='college logo.jpeg') }}");
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            position: relative;
+        }
+
+        /* Top Bar */
+        .top-bar {
+            background-color: rgba(11, 17, 32, 0.8);
+            backdrop-filter: blur(10px);
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #1e293b;
+        }
+
+        .search-bar {
+            padding: 12px 20px;
+            border-radius: 20px;
+            border: 1px solid #334155;
+            width: 300px;
+            background-color: #0f172a;
+            color: white;
+            transition: all 0.3s;
+        }
+        .search-bar:focus {
+            outline: none;
+            border-color: var(--primary-accent);
+            box-shadow: var(--neon-glow);
+        }
+
+        .profile-icon {
+            width: 45px;
+            height: 45px;
+            background-color: var(--card-color);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            border: 2px solid #334155;
+            transition: all 0.3s;
+            overflow: hidden;
+        }
+        
+        .profile-icon img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .profile-icon:hover {
+            border-color: var(--secondary-accent);
+            box-shadow: 0 0 15px rgba(167, 139, 250, 0.5);
+            transform: rotate(10deg);
+        }
+
+        /* Hide the top-right profile icon across all role dashboards */
+        .profile-container {
+            display: none !important;
+        }
+
+        /* Dashboard Area */
+        .dashboard-container, .page-container {
+            padding: 30px;
+            flex: 1;
+            overflow-y: auto;
+        }
+
+        .page-container {
+            display: none; /* Hidden by default */
+            opacity: 0;
+            transform: translateY(16px) scale(0.985);
+        }
+
+        .page-container.active {
+            display: block;
+            animation: dashboardPageIn 0.38s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+        }
+
+        @keyframes dashboardPageIn {
+            from {
+                opacity: 0;
+                transform: translateY(16px) scale(0.985);
+                filter: drop-shadow(0 0 0 rgba(56, 189, 248, 0));
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+                filter: drop-shadow(0 0 14px rgba(56, 189, 248, 0.18));
+            }
+        }
+
+        #profilePage {
+            background-image:
+                linear-gradient(rgba(2, 6, 23, 0.82), rgba(2, 6, 23, 0.82)),
+                url("{{ url_for('static', filename='college logo.jpeg') }}");
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            border-radius: 12px;
+            padding: 10px;
+        }
+
+        #dashboard,
+        #generateBill {
+            margin: 12px;
+            border-radius: 14px;
+            border: 1px solid rgba(56, 189, 248, 0.25);
+            background-image:
+                radial-gradient(circle at 15% 20%, rgba(56, 189, 248, 0.20), transparent 42%),
+                radial-gradient(circle at 82% 74%, rgba(167, 139, 250, 0.18), transparent 45%),
+                linear-gradient(rgba(2, 6, 23, 0.84), rgba(2, 6, 23, 0.84)),
+                url("{{ url_for('static', filename='college logo.jpeg') }}");
+            background-size: auto, auto, auto, cover;
+            background-position: 0 0, 100% 100%, center, center;
+            background-repeat: no-repeat, no-repeat, no-repeat, no-repeat;
+            box-shadow:
+                inset 0 0 40px rgba(56, 189, 248, 0.14),
+                0 0 22px rgba(56, 189, 248, 0.20);
+        }
+
+        /* Metrics Grid */
+        .metrics-grid {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .metric-card {
+            background-color: rgba(30, 41, 59, 0.5);
+            backdrop-filter: blur(5px);
+            padding: 25px;
+            border-radius: 12px;
+            flex: 1;
+            text-align: center;
+            border: 1px solid #334155;
+            transition: all 0.4s ease;
+        }
+
+        .metric-card:hover {
+            transform: translateY(-8px);
+            border-color: var(--primary-accent);
+            box-shadow: var(--neon-glow);
+        }
+
+        .metric-card.large {
+            flex: 2;
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+            border: 1px solid rgba(74, 222, 128, 0.3);
+        }
+        
+        .metric-card.large:hover {
+            box-shadow: 0 0 20px rgba(74, 222, 128, 0.4);
+            border-color: var(--revenue-glow);
+        }
+
+        .metric-title {
+            font-size: 0.85rem;
+            color: #94a3b8;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+
+        .metric-value {
+            font-size: 2.8rem;
+            font-weight: 800;
+            transition: all 0.3s;
+        }
+
+        .metric-value.large {
+            font-size: 3.5rem;
+            color: var(--revenue-glow);
+            text-shadow: 0 0 15px rgba(74, 222, 128, 0.5);
+        }
+
+        /* Pending List Table */
+        .pending-list {
+            background-color: rgba(11, 17, 32, 0.5);
+            backdrop-filter: blur(5px);
+            padding: 20px;
+            border-radius: 12px;
+            border: 1px solid #1e293b;
+        }
+
+        .table-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            position: relative;
+            z-index: 10;
+        }
+        
+        .table-header h3 {
+            color: white;
+            font-weight: 700;
+        }
+
+        /* Import Excel Container */
+        #importExcelContainer {
+            position: relative;
+            z-index: 100;
+            pointer-events: auto !important;
+        }
+
+        #fileInput:disabled {
+            display: none !important;
+            pointer-events: none !important;
+        }
+
+        /* Neon Buttons */
+        .neon-btn {
+            background: linear-gradient(45deg, #0f172a, #1e293b);
+            color: var(--primary-accent);
+            border: 1px solid var(--primary-accent);
+            padding: 12px 24px;
+            border-radius: 30px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            box-shadow: var(--neon-glow);
+            text-transform: uppercase;
+            font-size: 0.85rem;
+            letter-spacing: 1px;
+            position: relative;
+            z-index: 100;
+            pointer-events: auto !important;
+        }
+
+        .neon-btn:hover {
+            box-shadow: var(--neon-glow-intense);
+            color: white;
+            background: var(--primary-accent);
+            transform: scale(1.05);
+        }
+
+        .neon-btn:focus {
+            outline: 2px solid var(--primary-accent);
+            outline-offset: 2px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            margin-top: 15px;
+        }
+
+        th {
+            text-align: left;
+            padding: 18px;
+            color: #94a3b8;
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.8rem;
+            letter-spacing: 1px;
+            border-bottom: 2px solid #1e293b;
+        }
+        
+        td {
+            text-align: left;
+            padding: 20px 18px;
+            border-bottom: 1px solid #1e293b;
+            font-size: 0.95rem;
+        }
+        
+        tr:hover td {
+            background-color: rgba(56, 189, 248, 0.05);
+        }
+
+        /* --- Invoice Form Styling --- */
+        .form-card {
+            background-color: rgba(11, 17, 32, 0.8);
+            backdrop-filter: blur(10px);
+            padding: 30px;
+            border-radius: 12px;
+            border: 1px solid rgba(56, 189, 248, 0.2);
+            box-shadow: 0 0 20px rgba(56, 189, 248, 0.1);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #94a3b8;
+            font-size: 0.9rem;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 12px;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: white;
+            transition: all 0.3s ease;
+            box-sizing: border-box; /* Important for padding */
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary-accent);
+            box-shadow: 0 0 10px rgba(56, 189, 248, 0.3);
+        }
+
+        .form-control option {
+            background: #000000;
+            color: #ffffff;
+        }
+
+        .submit-btn {
+            background: linear-gradient(45deg, var(--primary-accent), var(--secondary-accent));
+            border: none;
+            color: white;
+            padding: 15px 30px;
+            border-radius: 8px;
+            cursor: pointer;
+            width: 100%;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: all 0.3s ease;
+        }
+
+        .submit-btn:hover {
+            box-shadow: 0 0 20px rgba(167, 139, 250, 0.6);
+            transform: translateY(-2px);
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.8);
+            backdrop-filter: blur(5px);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .modal-content {
+            background-color: var(--sidebar-color);
+            padding: 30px;
+            border-radius: 15px;
+            width: 400px;
+            text-align: center;
+            border: 1px solid #334155;
+            box-shadow: 0 0 30px rgba(56, 189, 248, 0.2);
+        }
+        
+        .profile-pic-editor {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            margin: 0 auto 20px;
+            background-color: var(--card-color);
+            border: 3px solid var(--primary-accent);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            overflow: hidden;
+            position: relative;
+            box-shadow: var(--neon-glow);
+            transition: all 0.3s;
+        }
+        
+        .profile-pic-editor img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .profile-pic-editor:hover {
+            box-shadow: var(--neon-glow-intense);
+        }
+    </style>
+    <div class="lightning-bg"></div>
+
+    <div class="sidebar">
+        <div class="logo-container">
+         <div class="logo-wing-wrap">
+            <img src="{{ url_for('static', filename='college logo.jpeg') }}" class="logo-img" alt="College Logo">
+         </div>
+            <div class="header-title">FEE MANAGEMENT</div>
+        </div>
+        
+        <button class="nav-btn active" onclick="showPage('dashboard', this)">Dashboard</button>
+        <button class="nav-btn" onclick="showPage('generateBill', this)">Generate Bill</button>
+        <div style="flex: 1;"></div>
+        
+        <button class="nav-btn logout-btn" onclick="logout()" style="background-color: rgba(239, 68, 68, 0.1); border-color: rgba(239, 68, 68, 0.3); color: #ef4444; margin-top: auto;">
+            🚪 Logout
+        </button>
+    </div>
+
+    <div class="main-content">
+        <div class="top-bar">
+            <input type="text" id="searchInput" class="search-bar" placeholder="🔍 Search by Student Name...">
+            <div class="profile-container">
+                <div class="profile-icon" onclick="openProfilePage()" id="topProfileIcon">
+                    <img src="path_to_profile_image.jpg" alt="Profile">
+                </div>
+            </div>
+        </div>
+
+        <div id="dashboard" class="dashboard-container page-container active">
+            <div class="metrics-grid">
+                <div class="metric-card">
+                    <div class="metric-title">Total Bills</div>
+                    <div class="metric-value">2</div>
+                </div>
+                <div class="metric-card large">
+                    <div class="metric-title">TOTAL REVENUE</div>
+                    <div class="metric-value large">₹0.00</div>
+                </div>
+                <div class="metric-card" style="border: 1px solid rgba(239, 68, 68, 0.3);">
+                    <div class="metric-title">Pending Fees Count</div>
+                    <div class="metric-value" style="color: var(--overdue-glow); text-shadow: 0 0 10px rgba(239, 68, 68, 0.3);">0</div>
+                </div>
+            </div>
+
+
+<div class="pending-list" id="pendingFeesSection">
+
+    <!-- TOTAL BILL BUTTON - VISIBLE FOR ADMIN/OWNER ONLY -->
+    <div id="totalBillButtonContainer" style="margin-bottom: 15px; position: relative; z-index: 10; pointer-events: auto;">
+        <button class="neon-btn"
+                style="width: 200px; z-index: 100; pointer-events: auto;"
+                type="button"
+                tabindex="0"
+                aria-label="View Total Bills"
+                onclick="openTotalBillsPage(); return false;">
+            TOTAL BILLS
+        </button>
+    </div>
+
+    <div class="table-header">
+    <h3>Pending Payments</h3>
+
+    <!-- IMPORT EXCEL BUTTON - VISIBLE FOR ADMIN/OWNER ONLY -->
+    <div id="importExcelContainer" style="display: block;">
+        <input type="file" id="fileInput" accept=".xlsx, .xls, .csv" style="display:none" onchange="handleFile(this.files)">
+        <button class="neon-btn" tabindex="0" aria-label="Import Excel File" onclick="openFilePickerForExcel(); return false;" type="button">+ Import Excel</button>
+    </div>
+
+</div>
+        <script>
+function openTotalBillsPage() {
+    // Role check - deny access to students
+    const role = document.body.getAttribute("data-role");
+    if (role !== "admin" && role !== "owner") {
+        alert("Access Denied: Only Admin and Owner users can view total bills.");
+        return;
+    }
+    
+    // Use Flask route (renders to the correct URL)
+    const nextUrl = "{{ url_for('total_bill') }}";
+    if (typeof navigateWithTransition === "function") {
+        navigateWithTransition(nextUrl);
+    } else {
+        window.location.href = nextUrl;
+    }
+}
+
+// Function to open file picker for Excel import with role check
+function openFilePickerForExcel() {
+    // Role check - deny access to students BEFORE opening file picker
+    const role = document.body.getAttribute("data-role");
+    if (role !== "admin" && role !== "owner") {
+        alert("Access Denied: Only Admin and Owner users can import Excel files.");
+        return; // Prevent file picker from opening
+    }
+    
+    // Only allowed users can open the file picker
+    document.getElementById('fileInput').click();
+}
+
+</script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+
+        <script>
+// Initialize page load - display user role in profile modal
+document.addEventListener("DOMContentLoaded", function () {
+    const role = document.body.getAttribute("data-role");
+    const isAdminOrOwner = (role === "admin" || role === "owner");
+    console.log("Current User Role:", role, "isAdminOrOwner:", isAdminOrOwner);
+
+    // Update role display in profile modal
+    const userRoleDisplay = document.getElementById("userRoleDisplay");
+    if (userRoleDisplay) {
+        const roleText = role.charAt(0).toUpperCase() + role.slice(1) + " User";
+        userRoleDisplay.textContent = roleText;
+    }
+
+    // Role-based visibility for admin/owner only
+    const totalBillContainer = document.getElementById("totalBillButtonContainer");
+    const importExcelContainer = document.getElementById("importExcelContainer");
+    const pendingFeesSection = document.getElementById("pendingFeesSection");
+    
+    if (isAdminOrOwner) {
+        if (totalBillContainer) totalBillContainer.style.display = "block";
+        if (importExcelContainer) importExcelContainer.style.display = "block";
+        if (pendingFeesSection) pendingFeesSection.style.display = "block";
+        // Explicitly enable file input for admin/owner
+        const fileInput = document.getElementById('fileInput');
+        if (fileInput) {
+            fileInput.disabled = false;
+            fileInput.style.pointerEvents = 'auto';
+        }
+    } else {
+        if (totalBillContainer) totalBillContainer.style.display = "none";
+        if (importExcelContainer) importExcelContainer.style.display = "none";
+        if (pendingFeesSection) pendingFeesSection.style.display = "block";
+        // Explicitly disable file input for students
+        const fileInput = document.getElementById('fileInput');
+        if (fileInput) {
+            fileInput.disabled = true;
+            fileInput.style.pointerEvents = 'none';
+        }
+    }
+
+    // Sync pending-fees table for all roles, including students
+    loadPendingFeesFromServer();
+});
+
+</script>
+
+                </div>
+                <table id="feesTable">
+                    <thead>
+                        <tr>
+                            <th>Student Name</th>
+                            <th>Department</th>
+                            <th>Fees Type</th>
+                            <th>Amount</th>
+                            <th>Due Date</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                 
+                    <tbody>
+    <tr id="noDataRow">
+        <td colspan="6" style="text-align:center; color:#94a3b8;">
+            No pending fees. Import Excel to display data.
+        </td>
+    </tr>
+</tbody>
+
+
+                </table>
+            </div>
+        </div>
+
+     <div id="generateBill" class="page-container">
+    <div class="form-card">
+        <h2 style="color: var(--primary-accent); margin-top: 0; text-shadow: var(--neon-glow);">Generate RVCE Fee Bill</h2>
+        <p style="color: #94a3b8; margin-bottom: 25px;">Fill details to generate a preview and downloadable receipt.</p>
+        
+        <form id="billForm">
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                <div class="form-group">
+                    <label>Student Name</label>
+                    <input type="text" id="in-name" class="form-control" placeholder="Full Name" required>
+                </div>
+                <div class="form-group">
+                    <label>Register Number</label>
+                    <input type="text" id="in-reg" class="form-control" placeholder="1RV21CS001" required>
+                </div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 15px;">
+                <div class="form-group">
+                    <label>Department</label>
+                    <select id="in-dept" class="form-control" required>
+                        <option value="">Select Dept</option>
+                        <option>Artificial Intelligence and Data Science</option>
+                        <option>Computer Science and Engineering</option>
+                        <option>Electrical and Electronics Engineering</option>
+                        <option>Information Technology</option>
+                        <option>Electronics and Communication Engineering</option>
+                        <option>Mechanical Engineering</option>
+                        <option>Computer Science and Business Systems</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Year / Semester</label>
+                    <input type="text" id="in-year" class="form-control" placeholder="3rd Year / 6th Sem">
+                </div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 15px;">
+                <div class="form-group">
+                    <label>Fee Type</label>
+                    <select id="in-fee" class="form-control" required>
+                        <option value="">Select Type</option>
+                        <option>Tuition Fees</option>
+                        <option>Hostel Fees</option>
+                        <option>Exam Fees</option>
+                        <option>Bus Fees</option>
+                        <option>Revised Fees</option>
+                        <option>No Due</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Amount (₹)</label>
+                    <input type="number" id="in-amount" class="form-control" placeholder="Enter Amount" required>
+                </div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 15px;">
+                <div class="form-group">
+                    <label>Bill Date</label>
+                    <input type="date" id="in-date" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label>Payment Mode</label>
+                    <select id="in-mode" class="form-control">
+                        <option>UPI</option>
+                        <option>Net Banking</option>
+                        <option>Cash</option>
+                    </select>
+                </div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 15px;">
+                <div class="form-group">
+                    <label>Reference</label>
+                    <input type="text" id="in-reference" class="form-control" placeholder="Reference No / Notes">
+                </div>
+                <div class="form-group">
+                    <label>Reference File</label>
+                    <input type="file" id="in-reference-file" class="form-control" onchange="handleReferenceFile(this.files)">
+                </div>
+            </div>
+
+            <div style="display: flex; gap: 15px; margin-top: 25px;">
+                <button type="button" class="submit-btn" style="flex: 2;" onclick="generatePreview()">Generate Preview</button>
+                <button type="button" id="dl-btn" class="submit-btn" style="flex: 1; background: var(--revenue-glow); display: none;" onclick="downloadBill()">
+                    <i class="fas fa-download"></i> PDF
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <div id="preview-section" style="display: none; background: rgb(245, 240, 240); color: rgb(17, 2, 2); padding: 40px;">
+        <h2 style="color: var(--primary-accent); margin-bottom: 20px;">Bill Preview</h2>
+        <div id="preview-content"></div>
+    </div>
+
+    <!-- PROFILE PAGE -->
+    <div id="profilePage" class="page-container">
+        <div class="form-card" style="max-width: 600px; margin: 50px auto;">
+            <h2 style="color: var(--primary-accent); margin-top: 0; text-shadow: var(--neon-glow);">User Profile</h2>
+            <p style="text-align: center; color: #dbeafe; font-weight: 700; letter-spacing: 0.4px;">Welcome To RVCE Fee Management System</p>
+            
+            <!-- Profile Picture Section -->
+            <div style="text-align: center; margin-bottom: 30px;">
+                <div class="profile-pic-editor" style="width: 150px; height: 150px; margin: 0 auto 20px;" onclick="document.getElementById('profileFileInput').click()">
+                    <img src="path_to_profile_image.jpg" alt="Profile" id="profilePageImg" style="object-fit: cover; width: 100%; height: 100%;">
+                </div>
+                <input type="file" id="profileFileInput" accept="image/*" style="display:none" onchange="handleProfilePic(this.files)">
+                <p style="color: #94a3b8; font-size: 0.9rem; margin-top: 10px;">Click picture to upload from device</p>
+            </div>
+            
+            <!-- User Name Display -->
+            <div class="form-group">
+                <label style="color: var(--primary-accent); font-weight: bold;">Your Name</label>
+                <p id="profileNameDisplay" style="color: #f1f5f9; font-size: 1.2rem; margin: 10px 0; padding: 15px; background: rgba(30, 41, 59, 0.5); border-radius: 8px; border-left: 3px solid var(--primary-accent);">User Name</p>
+            </div>
+            
+            <!-- User Role Display -->
+            <div class="form-group">
+                <label style="color: var(--primary-accent); font-weight: bold;">Your Role</label>
+                <p id="profileRoleDisplay" style="color: #f1f5f9; font-size: 1.2rem; margin: 10px 0; padding: 15px; background: rgba(30, 41, 59, 0.5); border-radius: 8px; border-left: 3px solid var(--secondary-accent);">User</p>
+            </div>
+
+            <div class="form-group">
+                <label style="color: var(--primary-accent); font-weight: bold;">User ID</label>
+                <p id="profileUserIdDisplay" style="color: #f1f5f9; font-size: 1.1rem; margin: 10px 0; padding: 15px; background: rgba(30, 41, 59, 0.5); border-radius: 8px; border-left: 3px solid #22d3ee;">{{ user_id }}</p>
+            </div>
+            
+            <!-- Edit Name Section -->
+            <div class="form-group" style="margin-top: 25px;">
+                <label for="editNameInput" style="color: var(--primary-accent); font-weight: bold;">Edit Name (Optional)</label>
+                <input type="text" id="editNameInput" class="form-control" placeholder="Enter new name">
+            </div>
+            
+            <button class="submit-btn" style="margin-top: 20px;" onclick="updateProfileName()">Update Profile</button>
+        </div>
+    </div>
+    
+    <div class="modal" id="profileModal">
+        <div class="modal-content">
+            <h3 style="color:rgb(236, 227, 227); margin-bottom: 20px;">User Profile</h3>
+            <div class="profile-pic-editor" onclick="document.getElementById('profilePicInput').click()">
+                <img src="path_to_profile_image.jpg" alt="Profile" id="modalProfileImg">
+            </div>
+            <input type="file" id="profilePicInput" accept="image/*" style="display:none" onchange="handleProfilePic(this.files)">
+            
+            <p id="userNameDisplay" style="color: #94a3b8; font-weight:bold; font-size: 1rem; margin: 15px 0 5px 0;">User Name</p>
+            <p id="userRoleDisplay" style="color: var(--primary-accent); font-weight:bold; font-size: 1.2rem; margin: 0;">User</p>
+            <p style="color: #94a3b8; font-size: 0.85rem; margin-top: 10px;">Click picture to upload from device</p>
+            <button class="neon-btn" style="margin-top:20px; width: 100%;" onclick="toggleModal(false)">Close</button>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
+    <script>
+let referenceFileName = "";
+let referenceFileData = "";
+let referenceFileType = "";
+
+function handleReferenceFile(files) {
+    const file = files && files[0];
+    referenceFileName = "";
+    referenceFileData = "";
+    referenceFileType = "";
+
+    if (!file) return;
+    referenceFileName = file.name || "";
+    referenceFileType = file.type || "";
+
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        referenceFileData = e.target.result || "";
+    };
+    reader.readAsDataURL(file);
+}
+
+function generatePreview() {
+    // Get values from your form fields
+    const name = document.getElementById('in-name').value;
+    const reg = document.getElementById('in-reg').value;
+    const dept = document.getElementById('in-dept').value;
+    const year = document.getElementById('in-year').value;
+    const fee = document.getElementById('in-fee').value;
+    const amount = document.getElementById('in-amount').value;
+    const date = document.getElementById('in-date').value;
+    const mode = document.getElementById('in-mode').value;
+    const referenceText = document.getElementById('in-reference').value || "";
+    const referenceFileInput = document.getElementById('in-reference-file');
+    const selectedFileName = (referenceFileInput && referenceFileInput.files && referenceFileInput.files[0])
+        ? referenceFileInput.files[0].name
+        : referenceFileName;
+
+    if (!name || !amount) {
+        alert("Please fill in the Student Name and Amount at minimum.");
+        return;
+    }
+
+    // Create a clean, professional HTML template for the receipt
+    const receiptTemplate = `
+        <div style="font-family: Arial, sans-serif; color: #333; padding: 20px; border: 2px solid #38bdf8;">
+            <div style="display:flex; align-items:center; justify-content:space-between; border-bottom: 2px solid #38bdf8; padding-bottom: 10px; margin-bottom: 20px;">
+                <img src="{{ url_for('static', filename='college logo.jpeg') }}" alt="RVCE Logo" style="width:72px; height:72px; border-radius:50%; object-fit:cover; border:2px solid #38bdf8;">
+                <div style="text-align: center; flex:1;">
+                    <h2 style="margin: 0; color: #0b1120;">RVCE OFFICIAL FEE RECEIPT</h2>
+                    <p style="margin: 5px 0; font-size: 12px;">Salvarpatti - 626 128, Sivakasi, Virudhunagar District, Tamil Nadu</p>
+                </div>
+                <div style="width:72px;"></div>
+            </div>
+            
+            <table style="width: 100%; border-collapse: collapse;">
+                <tr>
+                    <td style="padding: 8px; font-weight: bold;">Student Name:</td>
+                    <td style="padding: 8px;">${name}</td>
+                    <td style="padding: 8px; font-weight: bold;">Date:</td>
+                    <td style="padding: 8px;">${date}</td>
+                </tr>
+                <tr>
+                    <td style="padding: 8px; font-weight: bold;">Reg Number:</td>
+                    <td style="padding: 8px;">${reg}</td>
+                    <td style="padding: 8px; font-weight: bold;">Fee Type:</td>
+                    <td style="padding: 8px;">${fee}</td>
+                </tr>
+                <tr>
+                    <td style="padding: 8px; font-weight: bold;">Department:</td>
+                    <td style="padding: 8px;">${dept}</td>
+                    <td style="padding: 8px; font-weight: bold;">Payment Mode:</td>
+                    <td style="padding: 8px;">${mode}</td>
+                </tr>
+                <tr>
+                    <td style="padding: 8px; font-weight: bold;">Reference:</td>
+                    <td style="padding: 8px;">${referenceText || '-'}</td>
+                    <td style="padding: 8px; font-weight: bold;">Reference File:</td>
+                    <td style="padding: 8px;">${selectedFileName || '-'}</td>
+                </tr>
+            </table>
+
+            ${referenceFileData && referenceFileType.startsWith('image/') ? `
+            <div style="margin-top: 15px;">
+                <p style="margin: 0 0 8px 0; font-weight: bold;">Reference Attachment Preview</p>
+                <img src="${referenceFileData}" alt="Reference File" style="max-width: 180px; max-height: 180px; border-radius: 8px; border: 1px solid #cbd5e1;">
+            </div>` : ``}
+
+            <div style="margin-top: 30px; background: #f1f5f9; padding: 15px; text-align: center; border: 1px solid #cbd5e1;">
+                <h3 style="margin: 0;">TOTAL AMOUNT PAID: ₹${parseFloat(amount).toLocaleString()}</h3>
+            </div>
+
+            <p style="margin-top: 40px; font-size: 10px; color: #64748b; text-align: center; border-top: 1px dashed #cbd5e1; padding-top: 10px;">
+                *This is an electronically generated document. No signature is required.
+            </p>
+        </div>
+    `;
+
+    // Insert into your existing preview-content div
+    document.getElementById('preview-content').innerHTML = receiptTemplate;
+    
+    // Show the hidden sections
+    document.getElementById('preview-section').style.display = 'block';
+    document.getElementById('dl-btn').style.display = 'inline-block';
+    
+    // Smooth scroll to preview
+    document.getElementById('preview-section').scrollIntoView({ behavior: 'smooth' });
+
+    // Create bill object and persist it
+    const newBill = {
+        id: Date.now(),
+        name: name,
+        reg: reg,
+        dept: dept,
+        year: year,
+        type: fee,
+        amount: parseFloat(amount) || 0,
+        date: date,
+        mode: mode,
+        reference: referenceText,
+        reference_file: selectedFileName || ''
+    };
+
+    const bills = JSON.parse(localStorage.getItem('bills')) || [];
+    bills.push(newBill);
+    localStorage.setItem('bills', JSON.stringify(bills));
+
+    // If there is a matching pending fee (same student name), remove it
+    removeMatchingPending(name);
+
+}
+
+function downloadBill() {
+    const element = document.getElementById('preview-content');
+    const studentName = document.getElementById('in-name').value || "Student";
+
+
+
+
+
+    
+    // PDF Configuration
+    const opt = {
+        margin:       0.5,
+        filename:     `RVCE_Receipt_${studentName.replace(/\s+/g, '_')}.pdf`,
+        image:        { type: 'jpeg', quality: 0.98 },
+        html2canvas:  { scale: 2, logging: false },
+        jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' }
+    };
+
+    // New Promise-based usage:
+    html2pdf().set(opt).from(element).save();
+}
+</script>
+
+<script>
+// Function to handle the Excel Import
+function handleFile(files) {
+    // Role check - deny access to students
+    const role = document.body.getAttribute("data-role");
+    if (role !== "admin" && role !== "owner") {
+        alert("Access Denied: Only Admin and Owner users can import Excel files.");
+        return;
+    }
+
+    const file = files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        try {
+            const data = new Uint8Array(e.target.result);
+            const workbook = XLSX.read(data, { type: 'array', cellDates: true });
+            const firstSheetName = workbook.SheetNames[0];
+            const worksheet = workbook.Sheets[firstSheetName];
+            const rawData = XLSX.utils.sheet_to_json(worksheet, { defval: "" });
+
+            const tableBody = document.querySelector("#feesTable tbody");
+            tableBody.innerHTML = ""; 
+
+            // Build payload for server import
+            const payload = [];
+            rawData.forEach(row => {
+                const cleanRow = {};
+                Object.keys(row).forEach(key => {
+                    const cleanKey = key.trim().toLowerCase().replace(/\s/g, '');
+                    cleanRow[cleanKey] = row[key];
+                });
+
+                let rawDate = cleanRow["duedate"] || cleanRow["date"] || "";
+                let formattedDate = (rawDate instanceof Date) ? rawDate.toISOString().split('T')[0] : rawDate;
+                const name = cleanRow["studentname"] || cleanRow["name"] || "";
+                const dept = cleanRow["department"] || cleanRow["dept"] || "";
+                const feeType = cleanRow["feestype"] || cleanRow["feetype"] || cleanRow["type"] || "";
+                const amount = parseFloat(cleanRow["amount"]) || 0;
+
+                if (name !== "") {
+                    payload.push({
+                        student_name: String(name).trim(),
+                        department: String(dept).trim(),
+                        fee_type: String(feeType).trim(),
+                        amount: amount,
+                        due_date: String(formattedDate).trim()
+                    });
+                }
+            });
+
+            if (payload.length === 0) {
+                alert('No valid rows to import.');
+                return;
+            }
+
+            // Send rows to server for persistent storage
+            fetch('/api/pending-fees/import', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            })
+            .then(r => {
+                if (!r.ok) throw new Error('Import failed');
+                return r.json();
+            })
+            .then(data => {
+                // server returns the inserted rows with ids; render them
+                const tableBody = document.querySelector("#feesTable tbody");
+                tableBody.innerHTML = '';
+                data.forEach(row => {
+                    addRowToTable(row.student_name, row.department, row.fee_type, parseFloat(row.amount) || 0, row.due_date, row.id);
+                });
+                updateDashboardMetrics();
+            })
+            .catch(err => {
+                console.error(err);
+                alert('Could not import to server.');
+            });
+            
+        } catch (error) {
+            console.error("Error:", error);
+            alert("Could not process Excel file.");
+        }
+    };
+    reader.readAsArrayBuffer(file);
+}
+
+// Helper function to create a row with a DELETE button (admin/owner only)
+function addRowToTable(name, dept, type, amount, date, id) {
+    const tableBody = document.querySelector("#feesTable tbody");
+    const tr = document.createElement("tr");
+    
+    // We store the raw amount in a data-attribute to make calculations easier later
+    tr.setAttribute("data-amount", amount);
+    if (id) tr.setAttribute('data-id', id);
+
+    // Show Delete button only for admin/owner
+    const role = document.body.getAttribute("data-role");
+    const isAdminOrOwner = (role === "admin" || role === "owner");
+    console.log("Adding row for", name, "- Role:", role, "- showDelete:", isAdminOrOwner);
+
+    const deleteButtonHTML = isAdminOrOwner ? `
+        <td>
+            <button class="neon-btn" 
+                    style="padding: 5px 10px; background: #ef4444; border-color: #ef4444; font-size: 0.7rem;" 
+                    onclick="removeRow(this)">
+                Delete
+            </button>
+        </td>
+    ` : '<td></td>';
+
+    tr.innerHTML = `
+        <td>${name}</td>
+        <td>${dept}</td>
+        <td>${type}</td> 
+        <td>₹${amount.toLocaleString()}</td>
+        <td>${date}</td>
+        ${deleteButtonHTML}
+    `;
+    tableBody.appendChild(tr);
+}
+
+// Function to remove the row and update totals
+function removeRow(btn) {
+    // Role check - deny access to students
+    const role = document.body.getAttribute("data-role");
+    if (role !== "admin" && role !== "owner") {
+        alert("Access Denied: Only Admin and Owner users can delete records.");
+        return;
+    }
+    
+    if(confirm("Are you sure you want to remove this record?")) {
+        const row = btn.closest("tr");
+        const id = row.getAttribute('data-id');
+        if (id) {
+            // Delete from server first
+            fetch('/api/pending-fees/' + encodeURIComponent(id), { method: 'DELETE' })
+                .then(r => {
+                    if (!r.ok) throw new Error('Delete failed');
+                    row.remove();
+                    updateDashboardMetrics();
+                })
+                .catch(err => {
+                    console.error(err);
+                    alert('Could not delete record on server.');
+                });
+        } else {
+            // Local-only row
+            row.remove();
+            updateDashboardMetrics();
+        }
+    }
+}
+
+// Refresh dashboard cards from generated bills + pending table count
+function updateDashboardMetrics() {
+    // Totals are computed from saved bills only.
+    // Pending-fees table should not affect Total Bills / Total Revenue.
+    loadSavedBillsMetrics();
+}
+
+// Remove pending fee row(s) where student name matches the generated bill
+function removeMatchingPending(studentName) {
+    if (!studentName) return;
+
+    const tbody = document.querySelector('#feesTable tbody');
+    if (!tbody) return;
+
+    // Normalize strings for comparison
+    const norm = s => String(s || '').trim().toLowerCase();
+    const targetName = norm(studentName);
+
+    const rows = Array.from(tbody.querySelectorAll('tr'));
+    let removed = false;
+
+    rows.forEach(row => {
+        // Skip placeholder
+        if (row.id === 'noDataRow') return;
+
+        const cells = row.querySelectorAll('td');
+        if (cells.length < 5) return;
+
+        const rowName = norm(cells[0].innerText);
+        if (rowName === targetName) {
+            const id = row.getAttribute('data-id');
+            
+            // If row has server ID, delete from server
+            if (id) {
+                fetch('/api/pending-fees/' + encodeURIComponent(id), { method: 'DELETE' })
+                    .then(r => {
+                        if (r.ok) {
+                            row.remove();
+                            removed = true;
+                            updateDashboardMetrics();
+                        }
+                    })
+                    .catch(err => console.error('Failed to delete from server:', err));
+            } else {
+                // Local-only row, remove directly
+                row.remove();
+                removed = true;
+            }
+        }
+    });
+
+    // If table is empty after removal, restore placeholder row
+    const remainingRows = tbody.querySelectorAll('tr');
+    if (remainingRows.length === 0) {
+        const placeholder = document.createElement('tr');
+        placeholder.id = 'noDataRow';
+        placeholder.innerHTML = '<td colspan="6" style="text-align:center; color:#94a3b8;">No pending fees. Import Excel to display data.</td>';
+        tbody.appendChild(placeholder);
+    }
+
+    if (removed) {
+        updateDashboardMetrics();
+    }
+}
+</script>
+<script>
+// Load pending fees from server for admin/owner and render into table
+function loadPendingFeesFromServer() {
+    fetch('/api/pending-fees')
+        .then(r => {
+            if (!r.ok) throw new Error('Could not fetch');
+            return r.json();
+        })
+        .then(data => {
+            const tableBody = document.querySelector('#feesTable tbody');
+            tableBody.innerHTML = '';
+            if (!data || data.length === 0) {
+                const placeholder = document.createElement('tr');
+                placeholder.id = 'noDataRow';
+                placeholder.innerHTML = '<td colspan="6" style="text-align:center; color:#94a3b8;">No pending fees. Import Excel to display data.</td>';
+                tableBody.appendChild(placeholder);
+            } else {
+                data.forEach(row => {
+                    addRowToTable(row.student_name, row.department, row.fee_type, parseFloat(row.amount) || 0, row.due_date, row.id);
+                });
+            }
+            updateDashboardMetrics();
+        })
+        .catch(err => {
+            console.error('Failed loading pending fees:', err);
+        });
+}
+
+// Search pending fees by student name
+function searchPendingFees(query) {
+    const searchText = query.trim().toLowerCase();
+    const tableBody = document.querySelector('#feesTable tbody');
+    const rows = tableBody.querySelectorAll('tr');
+    let visibleCount = 0;
+
+    rows.forEach(row => {
+        // Skip placeholder row
+        if (row.id === 'noDataRow') {
+            row.style.display = 'none';
+            return;
+        }
+
+        const studentNameCell = row.querySelector('td:first-child');
+        if (!studentNameCell) return;
+
+        const studentName = studentNameCell.textContent.trim().toLowerCase();
+
+        // Show row if search is empty OR student name matches search query
+        if (searchText === '' || studentName.includes(searchText)) {
+            row.style.display = '';
+            visibleCount++;
+        } else {
+            row.style.display = 'none';
+        }
+    });
+
+    // If no rows match and search is active, show placeholder
+    if (visibleCount === 0 && searchText !== '') {
+        const placeholder = document.getElementById('noDataRow');
+        if (!placeholder) {
+            const newPlaceholder = document.createElement('tr');
+            newPlaceholder.id = 'noDataRow';
+            newPlaceholder.innerHTML = '<td colspan="6" style="text-align:center; color:#94a3b8;">No matching pending fees found.</td>';
+            tableBody.appendChild(newPlaceholder);
+        } else {
+            placeholder.style.display = '';
+            placeholder.textContent = 'No matching pending fees found.';
+        }
+    } else if (visibleCount === 0 && searchText === '') {
+        // Show original placeholder if all rows hidden and search is empty
+        const placeholder = document.getElementById('noDataRow');
+        if (placeholder) placeholder.style.display = '';
+    } else {
+        // Hide placeholder if there are visible rows
+        const placeholder = document.getElementById('noDataRow');
+        if (placeholder) placeholder.style.display = 'none';
+    }
+}
+
+// Setup search bar listener on page load
+document.addEventListener('DOMContentLoaded', function() {
+    const searchInput = document.getElementById('searchInput');
+    if (searchInput) {
+        searchInput.addEventListener('input', function(e) {
+            searchPendingFees(e.target.value);
+        });
+    }
+    
+    // Load user profile from server
+    loadProfileFromServer();
+}, true);
+</script>
+</script>
+    <script>
+
+        
+
+        // Page Navigation
+        function showPage(pageId, btn) {
+            // Hide all pages
+            document.querySelectorAll('.page-container').forEach(page => {
+                page.classList.remove('active');
+            });
+            // Show selected page
+            document.getElementById(pageId).classList.add('active');
+
+            // Update active button state
+            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+            if (btn) {
+                btn.classList.add('active');
+            }
+            // If navigating to dashboard, refresh metrics and reload pending fees
+            if (pageId === 'dashboard') {
+                loadSavedBillsMetrics();
+                // Reload pending fees from server to prevent clearing on page navigation
+                const role = document.body.getAttribute("data-role");
+                if (role === "admin" || role === "owner") {
+                    loadPendingFeesFromServer();
+                }
+            }
+            // If navigating to profile page, load profile data
+            if (pageId === 'profilePage') {
+                loadProfileFromServer();
+            }
+        }
+
+        function openProfilePage() {
+            showPage('profilePage', null);
+            toggleModal(false);
+        }
+
+        // Modal Handling
+        function toggleModal(show) {
+            document.getElementById('profileModal').style.display = show ? 'flex' : 'none';
+        }
+        
+        // Image handling for profile - upload to server
+        function handleProfilePic(files) {
+            if (files && files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const base64Image = e.target.result;
+                    
+                    // Display locally on all profile elements
+                    document.getElementById('modalProfileImg').src = base64Image;
+                    document.getElementById('topProfileIcon').innerHTML = `<img src="${base64Image}" alt="Profile">`;
+                    document.getElementById('profilePageImg').src = base64Image;
+                    
+                    // Upload to server
+                    fetch('/api/profile/upload', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            picture: base64Image,
+                            name: document.getElementById('userNameDisplay').textContent
+                        })
+                    })
+                    .then(r => r.json())
+                    .then(data => {
+                        if (data.success) {
+                            console.log('Profile picture saved successfully');
+                            alert('Profile picture updated successfully!');
+                        }
+                    })
+                    .catch(err => {
+                        console.error('Failed to save profile picture:', err);
+                        alert('Picture saved locally but could not sync to server');
+                    });
+                }
+                reader.readAsDataURL(files[0]);
+            }
+        }
+        
+        // Load profile from server on page load
+        function loadProfileFromServer() {
+            fetch('/api/profile')
+                .then(r => r.json())
+                .then(data => {
+                    const roleText = data.role + ' User';
+                    document.getElementById('userRoleDisplay').textContent = data.role;
+                    document.getElementById('userNameDisplay').textContent = data.name || roleText;
+                    
+                    // Update profile page displays
+                    document.getElementById('profileNameDisplay').textContent = data.name || roleText;
+                    document.getElementById('profileRoleDisplay').textContent = data.role;
+                    
+                    if (data.picture) {
+                        document.getElementById('modalProfileImg').src = data.picture;
+                        document.getElementById('topProfileIcon').innerHTML = `<img src="${data.picture}" alt="Profile">`;
+                        document.getElementById('profilePageImg').src = data.picture;
+                    }
+                })
+                .catch(err => {
+                    console.error('Failed to load profile:', err);
+                });
+        }
+        
+        // Update profile name
+        function updateProfileName() {
+            const newName = document.getElementById('editNameInput').value.trim();
+            
+            if (!newName) {
+                alert('Please enter a name');
+                return;
+            }
+            
+            // Update display
+            document.getElementById('profileNameDisplay').textContent = newName;
+            document.getElementById('userNameDisplay').textContent = newName;
+            
+            // Get current picture
+            const currentPicture = document.getElementById('profilePageImg').src;
+            
+            // Upload to server
+            fetch('/api/profile/upload', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    picture: currentPicture !== 'path_to_profile_image.jpg' ? currentPicture : '',
+                    name: newName
+                })
+            })
+            .then(r => r.json())
+            .then(data => {
+                if (data.success) {
+                    alert('Profile updated successfully!');
+                    document.getElementById('editNameInput').value = '';
+                    loadProfileFromServer();
+                }
+            })
+            .catch(err => {
+                console.error('Failed to update profile:', err);
+                alert('Failed to update profile');
+            });
+        }
+
+    
+    
+    
+    </script>
+    <script>
+    // Read saved bills from localStorage and update dashboard metrics
+    function loadSavedBillsMetrics() {
+        try {
+            const bills = JSON.parse(localStorage.getItem('bills')) || [];
+            const totalCount = bills.length;
+            const totalRevenue = bills.reduce((sum, b) => sum + (parseFloat(b.amount) || 0), 0);
+
+            const totalBillsCard = document.querySelector('.metric-card:nth-child(1) .metric-value');
+            const totalRevenueCard = document.querySelector('.metric-card.large .metric-value');
+
+            if (totalBillsCard) totalBillsCard.innerText = totalCount;
+            if (totalRevenueCard) totalRevenueCard.innerText = '₹' + totalRevenue.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
+
+            // Update overdue metric based on pending fees table rows (exclude placeholder)
+            const overdueCard = document.querySelector('.metric-card:nth-child(3) .metric-value');
+            let pendingRows = document.querySelectorAll('#feesTable tbody tr');
+            let pendingCount = 0;
+            pendingRows.forEach(r => {
+                if (r.id === 'noDataRow') return;
+                pendingCount++;
+            });
+            if (overdueCard) overdueCard.innerText = pendingCount;
+        } catch (err) {
+            console.error('Could not load saved bills:', err);
+        }
+    }
+
+    // Run once on page load so the dashboard shows current values
+    document.addEventListener('DOMContentLoaded', function() {
+        loadSavedBillsMetrics();
+    });
+    
+    // Logout function
+    function logout() {
+        if (confirm("Are you sure you want to logout?")) {
+            // Prefer server-rendered URL, but fall back to constructing it
+            var logoutUrl = "{{ url_for('logout') }}";
+            try {
+                if (!logoutUrl || logoutUrl.indexOf('{') !== -1) {
+                    // url_for was not rendered (template opened as file or Jinja failed)
+                    logoutUrl = window.location.protocol + '//' + window.location.host + '/logout';
+                }
+            } catch (e) {
+                logoutUrl = window.location.protocol + '//' + window.location.host + '/logout';
+            }
+            if (typeof navigateWithTransition === "function") {
+                navigateWithTransition(logoutUrl);
+            } else {
+                window.location.href = logoutUrl;
+            }
+        }
+    }
+    </script>
+    <script src="{{ url_for('static', filename='page-transitions.js') }}"></script>
+    <script src="{{ url_for('static', filename='glow-effects.js') }}"></script>
+</body>
+
+</html>
